@@ -1,0 +1,200 @@
+erDiagram
+	direction TB
+	API_KEY {
+		UUID id PK ""  
+		UUID merchant_id FK ""  
+		string key_id UK ""  
+		string key_secret_hash  ""  
+		string webhook_secret_key  ""  
+		string environment  ""  
+		boolean enabled  ""  
+		datetime last_used_at  ""  
+		datetime created_at  ""  
+		datetime rotated_at  ""  
+		datetime grace_period_expires_At  ""  
+	}
+
+	APP_USER {
+		UUID id PK ""  
+		UUID merchant_id FK ""  
+		string email UK ""  
+		string password_hash  ""  
+		string role  ""  
+		datetime created_at  ""  
+		datetime updated_at  ""  
+	}
+
+	CUSTOMER {
+		UUID id PK ""  
+		UUID merchant_id FK ""  
+		string name  ""  
+		string email  ""  
+		string phone  ""  
+		string gst_id  ""  
+		datetime created_at  ""  
+		datetime updated_at  ""  
+	}
+
+	MERCHANT {
+		UUID Id PK ""  
+		string name  ""  
+		string bussiness_name  ""  
+		string email  ""  
+		string status  ""  
+		string gst_id  ""  
+		string pan  ""  
+		string settlement_bank_account  ""  
+		string settlement_ifsc  ""  
+		string settlement_account_holder_name  ""  
+		datetime created_at  ""  
+		datetime updated_at  ""  
+		string created_by  ""  
+		string updated_by  ""  
+	}
+
+	MERCHANT_WEBHOOK_CONFIG {
+		UUID id PK ""  
+		UUID merchant_id FK ""  
+		string target_url  ""  
+		string event_type_filter  ""  
+		boolean enabled  ""  
+		string webhook_secret
+		datetime created_at  ""  
+	}
+
+	PAYMENT {
+		UUID id PK ""  
+		UUID merchant_id FK ""  
+		UUID order_id FK ""  
+		string idempotency_key  ""  
+		long amount_paise  ""  
+        string bank_reference
+		string status  ""  
+		string payment_method  ""  
+		jsonb method_details  ""  
+		string errror_code  ""  
+		string error_description  ""  
+		long refunded_amount_paise  ""  
+		datetime captured_at  ""  
+		datetime settled_at  ""  
+		datetime created_at  ""  
+		datetime updated_at  ""  
+	}
+
+    REFUND {
+        UUID id PK ""  
+        UUID payment_id FK
+		UUID merchant_id FK
+        long amount_paise
+        string status
+        string bank_reference
+        string errror_code  ""  
+		string error_description  ""  
+        datetime created_at  ""  
+		datetime process_at  ""  
+    }
+	ORDER_RECORD {
+		UUID id PK ""  
+		UUID merchant_id FK ""  
+		string idempotency_key  ""  
+		long amount_paise  ""  
+		string status  ""  
+		int attempts  ""  
+		jsonb notes  ""  
+		datetime expires_at  ""  
+		datetime created_at  ""  
+		datetime updated_at  ""  
+	}
+
+    PAYMENT_TRANSIION_LOG {
+        UUID id PK ""  
+        UUID payment_id FK
+        string from_status ""
+        string to_status
+        string event_type
+        string actor
+        strinf reason
+        datetime occurred_at
+    }
+
+	VAULT_CARD {
+		UUID id PK ""  
+		bytes encrypted_pan
+		byte encrypted_dek
+		string last_four
+		string brand
+		string bin
+		int expiry_month
+		int expiry_year
+		datetime created_at  ""  
+		datetime updated_at  "" 
+	}
+
+	CARD_TOKEN {
+		UUID id PK ""  
+		string token UK
+		UUID vault_card_id FK
+		UUID customer_id FK ""  
+		UUID merchant_id FK "" 
+		datetime created_at  ""  
+		datetime updated_at  "" 
+	}
+
+	WEBHOOK_EVENT {
+		UUID id PK "" 
+		UUID merchant_id FK "" 
+		string event_type
+		jsonb payload
+		string target_url
+		string status
+		int attempts
+		int last_response_code
+		datetime next_retry_at
+		datetime last_retry_at
+		datetime delivered_at
+	}
+
+	DLQ_EVENT{
+		UUID id PK "" 
+		UUID webhook_event_id
+		UUID merchant_id
+		string final_error
+		datetime moved_at
+		datetime replayed_at
+	}
+
+	SETTLEMENT {
+		UUID id PK "" 
+		UUID merchant_id	
+		long gross_amount_paise	
+		long refund_amount_paise	
+		long fee_amount_paise	
+		long gst_amount_paise	
+		long net_amount_paise	
+		string bank_reference
+		datetime settlement_date
+		datetime created_at
+		datetime processed_at
+	}
+
+	SETTLEMENT_PAYMENT {
+		UUID id PK, FK
+		UUID payment_id PK,FK
+	}
+
+
+	MERCHANT||--|{APP_USER:"has"
+	MERCHANT||--o{API_KEY:"has"
+	MERCHANT||--o{CUSTOMER:"has"
+	MERCHANT||--|{MERCHANT_WEBHOOK_CONFIG:"configure"
+
+	ORDER_RECORD ||--o{PAYMENT:"has"
+
+	PAYMENT ||--o{REFUND:"has"
+	PAYMENT ||--o{PAYMENT_TRANSIION_LOG:"logged by"
+
+	VAULT_CARD ||--o{ CARD_TOKEN: "tokenize"
+
+    SETTLEMENT ||--o{SETTLEMENT_PAYMENT: "includes"
+
+	WEBHOOK_EVENT ||--o| DLQ_EVENT: "dead-lettered"

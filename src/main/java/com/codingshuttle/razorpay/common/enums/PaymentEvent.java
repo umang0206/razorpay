@@ -1,0 +1,16 @@
+package com.codingshuttle.razorpay.common.enums;
+
+public enum PaymentEvent {
+    AUTHORIZED_ATTEMPTED,
+    AUTHORIZED_SUCCESS,
+    AUTHORIZED_FAILED,
+    CAPTURED_REQUESTED,
+    CAPTURED_SUCCESS,
+    CAPTURED_FAILED,
+    REFUNDED_INITIATED,
+    REFUNDED_COMPLETED,
+    REFUNDED_FAILED,
+    SETTLED,
+    CANCELLED,
+    TIMEOUT,
+}
