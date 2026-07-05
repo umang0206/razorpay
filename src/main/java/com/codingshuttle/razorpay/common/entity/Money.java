@@ -4,11 +4,11 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Money {
-    private int amountUnit;
+    private int amountUnits;
     private String currency;
 
-    private Money(int amountUnit, String currency) {
-        this.amountUnit = amountUnit;
+    private Money(int amountUnits, String currency) {
+        this.amountUnits = amountUnits;
         this.currency = currency;
     }
 
@@ -24,14 +24,14 @@ public class Money {
        if(!this.currency.equals(other.currency)) {
            throw new IllegalArgumentException("Cannot add Money with different currencies");
        }
-       return new Money(this.amountUnit + other.amountUnit, this.currency);
+       return new Money(this.amountUnits + other.amountUnits, this.currency);
     }
 
     public Money subtract(Money other) {
         if(!this.currency.equals(other.currency)) {
             throw new IllegalArgumentException("Cannot subtract Money with different currencies");
         }
-        return new Money(this.amountUnit - other.amountUnit, this.currency);
+        return new Money(this.amountUnits - other.amountUnits, this.currency);
     }
 
 }
