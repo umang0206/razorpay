@@ -24,3 +24,4 @@ spring:
         format_sql: true
         #this will set the dialect for the database, in this case it is set to PostgreSQL
         dialect: org.hibernate.dialect.PostgreSQLDialect
+#debug: true
