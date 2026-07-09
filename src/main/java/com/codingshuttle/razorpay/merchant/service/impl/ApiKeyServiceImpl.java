@@ -7,6 +7,7 @@ import com.codingshuttle.razorpay.merchant.dto.response.ApiKeyCreateResponse;
 import com.codingshuttle.razorpay.merchant.dto.response.ApiKeyResponse;
 import com.codingshuttle.razorpay.merchant.entity.ApiKey;
 import com.codingshuttle.razorpay.merchant.entity.Merchant;
+import com.codingshuttle.razorpay.merchant.mapper.ApiKeyMapper;
 import com.codingshuttle.razorpay.merchant.repository.ApiKeyRepository;
 import com.codingshuttle.razorpay.merchant.repository.MerchantRepository;
 import com.codingshuttle.razorpay.merchant.service.ApiKeyService;
@@ -26,6 +27,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
     private final MerchantRepository merchantRepository;
     private final ApiKeyRepository apiKeyRepository;
+    private final ApiKeyMapper apiKeyMapper;
 
     @Override
     @Transactional
@@ -51,7 +53,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     @Override
     public List<ApiKeyResponse> listByMerchant(UUID merchantId) {
 
-        return apiKeyRepository.findByMerchant_Id(merchantId)
+        /*return apiKeyRepository.findByMerchant_Id(merchantId)
                 .stream()
                 .map(apiKey ->
                         new ApiKeyResponse (
@@ -63,6 +65,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                                 null))
 
                 .toList();
+         */
+        return apiKeyMapper.toApiKeyResponseList(apiKeyRepository.findByMerchant_Id(merchantId));
     }
 
     @Override
@@ -83,6 +87,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         ApiKey apiKey = apiKeyRepository.findById(keyId)
                 .filter(apiKey1 -> apiKey1.getMerchant().getId().equals(merchantId))
                 .orElseThrow(() -> new ResourceNotFoundException("Api Key", keyId));
+
+        if(! apiKey.getEnabled()) throw new RuntimeException("Can not revoke disabled API key");
 
         String newRawSecret = RandomizerUtil.randomBase64(40);
         apiKey.setPreviousKeySecretHash(apiKey.getKeySecretHash());
