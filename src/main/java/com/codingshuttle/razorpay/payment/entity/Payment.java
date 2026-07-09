@@ -42,7 +42,7 @@ public class Payment extends BaseEntity {
     private OrderRecord orderRecord;
 
     @Embedded
-    private Money money;
+    private Money amount;
 
     @Column(nullable = false)
     private String idempotencyKey;
@@ -61,6 +61,9 @@ public class Payment extends BaseEntity {
 
     @Column(length = 100)
     private String bankReference;
+
+    @Column(length = 100)
+    private String processorReference;
 
     @Column(length = 100)
     private String errorCode;
