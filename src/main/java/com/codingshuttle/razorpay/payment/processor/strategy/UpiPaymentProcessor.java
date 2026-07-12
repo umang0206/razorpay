@@ -1,5 +1,6 @@
 package com.codingshuttle.razorpay.payment.processor.strategy;
 
+import com.codingshuttle.razorpay.common.util.RandomizerUtil;
 import com.codingshuttle.razorpay.payment.processor.PaymentProcessor;
 import com.codingshuttle.razorpay.payment.processor.dto.PaymentProcessorRequest;
 import com.codingshuttle.razorpay.payment.processor.dto.PaymentProcessorResponse;
@@ -8,6 +9,20 @@ public class UpiPaymentProcessor implements PaymentProcessor {
 
     @Override
     public PaymentProcessorResponse charge(PaymentProcessorRequest request) {
-        return null;
+        final String VPA_CODE_FAILED = "fail@okaxis";
+
+        String bankCode = request.methodDetails()!= null ?
+                request.methodDetails().get("vpa").toString() : null;
+
+        //simulation
+        if(VPA_CODE_FAILED.equals(bankCode)){
+            return new PaymentProcessorResponse.Failure
+                    ("UPI_REJECTED", "Banked rejected the transaction registration");
+        }
+
+        String processorRef = "UPI_PROCESSOR_" + RandomizerUtil.randomBase64(16);
+        String bankRef = "BANK_REF"+RandomizerUtil.randomBase64(16);
+
+        return new PaymentProcessorResponse.Success(processorRef, bankRef);
     }
 }

@@ -11,4 +11,5 @@ public enum PaymentStatus {
     SETTLED,
     PARTIALLY_REFUNDED,
     AUTH_EXPIRED,
+    CANCELED
 }
